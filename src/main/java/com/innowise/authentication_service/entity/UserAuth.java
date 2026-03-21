@@ -25,5 +25,6 @@ public class UserAuth extends BaseEntity {
     private String passwordHash;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private AuthRole role = AuthRole.USER;
 }
