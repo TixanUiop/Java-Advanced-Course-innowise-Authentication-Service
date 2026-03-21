@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: Authentication Service
+  datasource:
+    username: postgres
+    url: postgresql://postgres:postgres@localhost:5438/auth_db
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
