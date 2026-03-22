@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class AuthService {
 
@@ -20,10 +22,22 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
+
+    public UserAuth findById(Long id)
+    {
+        Optional<UserAuth> byId = userRepository.findById(id);
+        if (byId.isPresent()) {
+            return byId.get();
+        }
+        throw new RuntimeException("User not found");
+    }
+
     public UserAuth register(String login, String password) {
+
         if (userRepository.findByLogin(login).isPresent()) {
             throw new RuntimeException("User already exists");
         }
+
         UserAuth user = UserAuth.builder()
                 .login(login)
                 .passwordHash(passwordEncoder.encode(password))
