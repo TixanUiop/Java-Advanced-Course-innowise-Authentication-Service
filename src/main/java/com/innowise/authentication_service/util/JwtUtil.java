@@ -2,6 +2,7 @@ package com.innowise.authentication_service.util;
 
 
 import com.innowise.authentication_service.entity.enums.AuthRole;
+import com.innowise.authentication_service.exception.InvalidOrExpiredToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -49,7 +50,7 @@ public class JwtUtil {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (JwtException e) {
-            throw new RuntimeException("Invalid or expired token");
+            throw new InvalidOrExpiredToken();
         }
     }
 

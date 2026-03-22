@@ -2,6 +2,9 @@ package com.innowise.authentication_service.service;
 
 import com.innowise.authentication_service.entity.UserAuth;
 import com.innowise.authentication_service.entity.enums.AuthRole;
+import com.innowise.authentication_service.exception.InvalidCredentials;
+import com.innowise.authentication_service.exception.UserAlreadyExistsException;
+import com.innowise.authentication_service.exception.UserNotFoundException;
 import com.innowise.authentication_service.repository.UserAuthRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,20 +25,19 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-
     public UserAuth findById(Long id)
     {
         Optional<UserAuth> byId = userRepository.findById(id);
         if (byId.isPresent()) {
             return byId.get();
         }
-        throw new RuntimeException("User not found");
+        throw new UserNotFoundException(id);
     }
 
     public UserAuth register(String login, String password) {
 
         if (userRepository.findByLogin(login).isPresent()) {
-            throw new RuntimeException("User already exists");
+            throw new UserAlreadyExistsException();
         }
 
         UserAuth user = UserAuth.builder()
@@ -48,10 +50,10 @@ public class AuthService {
 
     public UserAuth authenticate(String login, String password) {
         UserAuth user = userRepository.findByLogin(login)
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+                .orElseThrow(() -> new InvalidCredentials());
 
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new InvalidCredentials();
         }
 
         return user;
