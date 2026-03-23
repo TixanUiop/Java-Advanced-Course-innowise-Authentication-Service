@@ -10,8 +10,8 @@
     </parent>
     <groupId>com.innowise</groupId>
     <artifactId>authentication_service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>Authentication Service</name>
+    <version>0.0.1</version>
+    <name>authentication-service</name>
     <description>Authentication Service</description>
 
     <properties>
