@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.function.Function;
 
 @Component
-public class JwtUtil {
+public class JwtUtil    {
 
     private final String SECRET = "com-innowise-authentication-service-secret-key";
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
