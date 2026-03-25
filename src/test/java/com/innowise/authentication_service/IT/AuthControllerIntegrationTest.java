@@ -51,8 +51,8 @@ class AuthControllerIntegrationTest extends BaseIntegrationTest {
     private static final String TEST_LOGIN = "testuser";
     private static final String TEST_PASSWORD = "password123";
 
-    private static final String ADMIN_LOGIN = "admin";
-    private static final String ADMIN_PASSWORD = "admin123";
+    private static final String ADMIN_LOGIN = "adm";
+    private static final String ADMIN_PASSWORD = "adm123";
 
     @BeforeEach
     void setUp() {

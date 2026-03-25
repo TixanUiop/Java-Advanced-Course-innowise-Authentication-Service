@@ -5,17 +5,19 @@ import com.innowise.authentication_service.exception.InvalidOrExpiredToken;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 
 class JwtUtilTest {
 
+
     private JwtUtil jwtUtil;
 
     @BeforeEach
     void setup() {
-        jwtUtil = new JwtUtil();
+        jwtUtil = new JwtUtil("01234567890123456789012345678901");
     }
 
     @Test

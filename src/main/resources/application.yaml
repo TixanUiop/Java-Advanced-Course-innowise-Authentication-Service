@@ -10,3 +10,5 @@ spring:
 admin:
   login: admin
   password: admin123
+jwt:
+  secret: ${JWT_SECRET:com-innowise-authentication-service-secret-key}

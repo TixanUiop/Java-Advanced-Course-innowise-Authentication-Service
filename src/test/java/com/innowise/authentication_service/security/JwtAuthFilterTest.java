@@ -24,7 +24,7 @@ class JwtAuthFilterTest {
 
     @BeforeEach
     void setup() {
-        jwtUtil = new JwtUtil();
+        jwtUtil = new JwtUtil("01234567890123456789012345678901");
         filter = new JwtAuthFilter(jwtUtil);
         SecurityContextHolder.clearContext();
     }
@@ -64,7 +64,7 @@ class JwtAuthFilterTest {
 
     @Test
     void shouldClearContextIfTokenInvalid() throws Exception {
-        JwtUtil jwtUtil = new JwtUtil();
+        JwtUtil jwtUtil = new JwtUtil("01234567890123456789012345678901");
         JwtAuthFilter filter = new JwtAuthFilter(jwtUtil);
 
         MockHttpServletRequest request = new MockHttpServletRequest();

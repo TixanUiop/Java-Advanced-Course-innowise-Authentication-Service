@@ -7,6 +7,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -16,31 +18,15 @@ import java.util.function.Function;
 @Component
 public class JwtUtil    {
 
-    private final String SECRET = "com-innowise-authentication-service-secret-key";
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private Key key;
 
     private final long accessTokenExpiration = 1000 * 60 * 15;
     private final long refreshTokenExpiration = 1000 * 60 * 60 * 24;
 
-//    public String generateToken(Long userId, AuthRole role)
-//    {
-//        return Jwts.builder()
-//                .setSubject(userId.toString())
-//                .claim("role", role.toString())
-//                .setIssuedAt(new Date())
-//                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
-//                .signWith(key)
-//                .compact();
-//    }
 
-//    public String generateRefreshToken(Long userId) {
-//        return Jwts.builder()
-//                .setSubject(userId.toString())
-//                .setIssuedAt(new Date())
-//                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
-//                .signWith(key)
-//                .compact();
-//    }
+    public JwtUtil(@Value("${jwt.secret}") String secret) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
     public Claims validateToken(String token) {
         try {
