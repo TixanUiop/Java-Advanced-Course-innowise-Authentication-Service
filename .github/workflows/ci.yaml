@@ -114,9 +114,7 @@ jobs:
       DB_URL: jdbc:postgresql://localhost:5432/myappdb
       DB_USERNAME: user
       DB_PASSWORD: password
-      SPRING_REDIS_HOST: localhost
-      SPRING_REDIS_PORT: 6379
-      SPRING_PROFILES_ACTIVE: docker
+      SPRING_PROFILES_ACTIVE: test
 
     steps:
       - uses: actions/checkout@v3
