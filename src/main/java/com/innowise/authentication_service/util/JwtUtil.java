@@ -20,8 +20,8 @@ public class JwtUtil    {
 
     private Key key;
 
-    private final long accessTokenExpiration = 1000 * 60 * 15;
-    private final long refreshTokenExpiration = 1000 * 60 * 60 * 24;
+    private final long accessTokenExpiration = 1000L * 60L * 15L;
+    private final long refreshTokenExpiration = 1000L * 60L * 60L * 24L;
 
 
     public JwtUtil(@Value("${jwt.secret}") String secret) {

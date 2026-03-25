@@ -158,7 +158,9 @@ jobs:
             -Dsonar.login=$SONAR_TOKEN \
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
             -Dsonar.pullrequest.branch=${{ github.head_ref }} \
-            -Dsonar.pullrequest.base=${{ github.base_ref }}
+            -Dsonar.pullrequest.base=${{ github.base_ref }} \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+            -Dsonar.coverage.exclusions=**/dto/**,**/entity/**,**/exception/**,**/config/**
 
       - name: Build Docker Image
         run: docker build -t spring_app:latest .
