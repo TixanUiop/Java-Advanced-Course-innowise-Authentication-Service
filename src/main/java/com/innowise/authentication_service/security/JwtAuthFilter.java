@@ -1,5 +1,6 @@
 package com.innowise.authentication_service.security;
 
+import com.innowise.authentication_service.exception.RoleMissingInToken;
 import com.innowise.authentication_service.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -35,8 +36,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token = authorizationHeader.substring(7);
 
         try {
+
+            jwtUtil.validateToken(token);
+
+            String type = jwtUtil.extractTokenType(token);
+            if (!"access".equals(type)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             Long userId = jwtUtil.extractUserId(token);
             String role = jwtUtil.extractRole(token);
+
+            if (role == null) {
+                throw new RoleMissingInToken();
+            }
 
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(

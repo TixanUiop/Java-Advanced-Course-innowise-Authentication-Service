@@ -22,25 +22,25 @@ public class JwtUtil    {
     private final long accessTokenExpiration = 1000 * 60 * 15;
     private final long refreshTokenExpiration = 1000 * 60 * 60 * 24;
 
-    public String generateToken(Long userId, AuthRole role)
-    {
-        return Jwts.builder()
-                .setSubject(userId.toString())
-                .claim("role", role.toString())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
-                .signWith(key)
-                .compact();
-    }
+//    public String generateToken(Long userId, AuthRole role)
+//    {
+//        return Jwts.builder()
+//                .setSubject(userId.toString())
+//                .claim("role", role.toString())
+//                .setIssuedAt(new Date())
+//                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+//                .signWith(key)
+//                .compact();
+//    }
 
-    public String generateRefreshToken(Long userId) {
-        return Jwts.builder()
-                .setSubject(userId.toString())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
-                .signWith(key)
-                .compact();
-    }
+//    public String generateRefreshToken(Long userId) {
+//        return Jwts.builder()
+//                .setSubject(userId.toString())
+//                .setIssuedAt(new Date())
+//                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
+//                .signWith(key)
+//                .compact();
+//    }
 
     public Claims validateToken(String token) {
         try {
@@ -52,6 +52,26 @@ public class JwtUtil    {
         } catch (JwtException e) {
             throw new InvalidOrExpiredToken();
         }
+    }
+    public String generateToken(Long userId, AuthRole role) {
+        return Jwts.builder()
+                .setSubject(userId.toString())
+                .claim("role", role.toString())
+                .claim("type", "access")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+                .signWith(key)
+                .compact();
+    }
+
+    public String generateRefreshToken(Long userId) {
+        return Jwts.builder()
+                .setSubject(userId.toString())
+                .claim("type", "refresh")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
+                .signWith(key)
+                .compact();
     }
 
     public Long extractUserId(String token) {
@@ -75,7 +95,7 @@ public class JwtUtil    {
                 .getBody();
     }
 
-    public String extractTokenType(String claims) {
-        return extractAllClaims(claims).get("type", String.class);
+    public String extractTokenType(String token) {
+        return extractAllClaims(token).get("type", String.class);
     }
 }
