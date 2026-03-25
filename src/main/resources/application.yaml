@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: test
 admin:
   login: ${ADMIN_LOGIN:admin}
   password: ${ADMIN_PASSWORD:changeme}
