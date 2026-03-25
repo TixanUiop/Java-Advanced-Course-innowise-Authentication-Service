@@ -6,17 +6,22 @@ import com.innowise.authentication_service.exception.InvalidCredentials;
 import com.innowise.authentication_service.exception.UserAlreadyExistsException;
 import com.innowise.authentication_service.exception.UserNotFoundException;
 import com.innowise.authentication_service.repository.UserAuthRepository;
+import jakarta.annotation.PostConstruct;
+import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class AuthService {
 
     private UserAuthRepository userRepository;
     private PasswordEncoder passwordEncoder;
+
 
     @Autowired
     public AuthService(UserAuthRepository userRepository, PasswordEncoder passwordEncoder)
@@ -32,6 +37,27 @@ public class AuthService {
             return byId.get();
         }
         throw new UserNotFoundException(id);
+    }
+
+    @PostConstruct
+    public void createAdminIfNotExists() {
+        if (userRepository.findByLogin("admin").isEmpty()) {
+            UserAuth admin = UserAuth.builder()
+                    .login("admin")
+                    .passwordHash(passwordEncoder.encode("admin123"))
+                    .role(AuthRole.ADMIN)
+                    .build();
+            userRepository.save(admin);
+            log.info("Created admin");
+        }
+    }
+
+    public void makeAdmin(Long id) {
+        UserAuth user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+
+        user.setRole(AuthRole.ADMIN);
+        userRepository.save(user);
     }
 
     public UserAuth register(String login, String password) {

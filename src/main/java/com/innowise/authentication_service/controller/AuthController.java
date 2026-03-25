@@ -7,6 +7,7 @@ import com.innowise.authentication_service.exception.InvalidOrExpiredToken;
 import com.innowise.authentication_service.service.AuthService;
 import com.innowise.authentication_service.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -63,5 +64,11 @@ public class AuthController {
         String newAccess = jwtUtil.generateToken(user.getId(), user.getRole());
 
         return new AuthResponse(newAccess, refreshToken);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/make-admin/{id}")
+    public void makeAdmin(@PathVariable Long id) {
+        authService.makeAdmin(id);
     }
 }

@@ -22,10 +22,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        .requestMatchers("/users/**").hasAnyRole("USER", "ADMIN")
+
+                        .anyRequest().authenticated()
+                );
         return http.build();
     }
 }
