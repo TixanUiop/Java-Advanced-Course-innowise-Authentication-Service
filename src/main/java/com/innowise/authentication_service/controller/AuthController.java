@@ -3,6 +3,7 @@ package com.innowise.authentication_service.controller;
 import com.innowise.authentication_service.dto.AuthRequest;
 import com.innowise.authentication_service.dto.AuthResponse;
 import com.innowise.authentication_service.entity.UserAuth;
+import com.innowise.authentication_service.exception.InvalidOrExpiredToken;
 import com.innowise.authentication_service.service.AuthService;
 import com.innowise.authentication_service.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -48,8 +49,15 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public AuthResponse refreshToken(@RequestParam String refreshToken) {
-        Long userId = jwtUtil.extractUserId(refreshToken);
+
         jwtUtil.validateToken(refreshToken);
+        String type = jwtUtil.extractTokenType(refreshToken);
+
+        if (!"refresh".equals(type)) {
+            throw new InvalidOrExpiredToken();
+        }
+
+        Long userId = jwtUtil.extractUserId(refreshToken);
         UserAuth user = authService.findById(userId);
 
         String newAccess = jwtUtil.generateToken(user.getId(), user.getRole());

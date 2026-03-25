@@ -74,4 +74,8 @@ public class JwtUtil    {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    public String extractTokenType(String claims) {
+        return extractAllClaims(claims).get("type", String.class);
+    }
 }
