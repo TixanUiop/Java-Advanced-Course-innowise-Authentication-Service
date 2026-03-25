@@ -26,11 +26,9 @@ jobs:
           --health-retries=10
 
     env:
-      DB_URL: jdbc:postgresql://localhost:5432/myappdb
+      DB_URL: jdbc:postgresql://postgres:5432/myappdb
       DB_USERNAME: user
       DB_PASSWORD: password
-      SPRING_REDIS_HOST: localhost
-      SPRING_REDIS_PORT: 6379
       SPRING_PROFILES_ACTIVE: docker
 
     steps:
