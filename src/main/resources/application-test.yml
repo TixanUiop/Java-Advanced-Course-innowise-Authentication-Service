@@ -1,17 +1,9 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/myappdb
-    username: user
-    password: password
-    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+
 admin:
   login: admin
   password: admin123

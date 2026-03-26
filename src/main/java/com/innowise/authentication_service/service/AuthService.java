@@ -9,6 +9,7 @@ import com.innowise.authentication_service.repository.UserAuthRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
@@ -20,17 +21,15 @@ public class AuthService {
     private UserAuthRepository userRepository;
     private PasswordEncoder passwordEncoder;
 
-    @org.springframework.beans.factory.annotation.Value("${admin.login}")
-    private String adminLogin;
+    private final Environment env;
 
-    @org.springframework.beans.factory.annotation.Value("${admin.password}")
-    private String adminPassword;
 
     @Autowired
-    public AuthService(UserAuthRepository userRepository, PasswordEncoder passwordEncoder)
+    public AuthService(UserAuthRepository userRepository, PasswordEncoder passwordEncoder, Environment env)
     {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.env = env;
     }
 
     public UserAuth findById(Long id)
@@ -44,15 +43,18 @@ public class AuthService {
 
 
     @PostConstruct
-    public void createAdminIfNotExists() {
-        if (userRepository.findByLogin(adminLogin).isEmpty()) {
-            UserAuth admin = UserAuth.builder()
-                    .login(adminLogin)
-                    .passwordHash(passwordEncoder.encode(adminPassword))
-                    .role(AuthRole.ADMIN)
-                    .build();
-            userRepository.save(admin);
-            log.info("Created admin user '{}'", adminLogin);
+    public void createDefaultAdmin() {
+        String activeProfile = env.getActiveProfiles().length > 0 ? env.getActiveProfiles()[0] : "";
+
+        if (!activeProfile.equals("prod")) {
+            userRepository.findByLogin("admin").orElseGet(() -> {
+                UserAuth admin = UserAuth.builder()
+                        .login(env.getProperty("admin.login", "admin"))
+                        .passwordHash(passwordEncoder.encode(env.getProperty("admin.password", "changeme")))
+                        .role(AuthRole.ADMIN)
+                        .build();
+                return userRepository.save(admin);
+            });
         }
     }
 
