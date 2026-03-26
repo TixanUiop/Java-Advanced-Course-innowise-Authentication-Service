@@ -42,18 +42,18 @@ public class AuthService {
     }
 
 
+
     @PostConstruct
     public void createDefaultAdmin() {
         String activeProfile = env.getActiveProfiles().length > 0 ? env.getActiveProfiles()[0] : "";
-
         if (!activeProfile.equals("prod")) {
-            userRepository.findByLogin("admin").orElseGet(() -> {
-                UserAuth admin = UserAuth.builder()
+            UserAuth admin = userRepository.findByLogin("admin").orElseGet(() -> {
+                UserAuth newAdmin = UserAuth.builder()
                         .login(env.getProperty("admin.login", "admin"))
                         .passwordHash(passwordEncoder.encode(env.getProperty("admin.password", "changeme")))
                         .role(AuthRole.ADMIN)
                         .build();
-                return userRepository.save(admin);
+                return userRepository.save(newAdmin);
             });
         }
     }
