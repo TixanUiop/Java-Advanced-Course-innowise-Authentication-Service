@@ -9,9 +9,13 @@ import com.innowise.authentication_service.repository.UserAuthRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.Optional;
 
 @Slf4j
@@ -23,6 +27,8 @@ public class AuthService {
 
     private final Environment env;
 
+    @Value("${internal.secret}")
+    private String internalKey;
 
     @Autowired
     public AuthService(UserAuthRepository userRepository, PasswordEncoder passwordEncoder, Environment env)
@@ -30,6 +36,15 @@ public class AuthService {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.env = env;
+    }
+
+    public void delete(Long id, String key) {
+
+        if (!internalKey.equals(key)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid internal key");
+        }
+
+        userRepository.deleteById(id);
     }
 
     public UserAuth findById(Long id)
@@ -40,8 +55,6 @@ public class AuthService {
         }
         throw new UserNotFoundException(id);
     }
-
-
 
     @PostConstruct
     public void createDefaultAdmin() {
