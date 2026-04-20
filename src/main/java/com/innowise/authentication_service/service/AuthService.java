@@ -47,13 +47,9 @@ public class AuthService {
         userRepository.deleteById(id);
     }
 
-    public UserAuth findById(Long id)
-    {
-        Optional<UserAuth> byId = userRepository.findById(id);
-        if (byId.isPresent()) {
-            return byId.get();
-        }
-        throw new UserNotFoundException(id);
+    public UserAuth findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @PostConstruct
