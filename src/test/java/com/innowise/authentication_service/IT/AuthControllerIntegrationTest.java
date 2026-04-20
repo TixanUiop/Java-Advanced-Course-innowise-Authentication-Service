@@ -80,6 +80,72 @@ class AuthControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    void makeAdminForbiddenForUser() throws Exception {
+        UserAuth user = userAuthRepository.findByLogin(TEST_LOGIN).orElseThrow();
+
+        String userToken = jwtUtil.generateToken(1L, AuthRole.USER);
+
+        mockMvc.perform(post("/auth/make-admin/" + user.getId())
+                        .header("Authorization", "Bearer " + userToken))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void makeAdminSuccess() throws Exception {
+        UserAuth user = userAuthRepository.findByLogin(TEST_LOGIN).orElseThrow();
+
+        String adminToken = jwtUtil.generateToken(999L, AuthRole.ADMIN);
+
+        mockMvc.perform(post("/auth/make-admin/" + user.getId())
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk());
+
+        UserAuth updated = userAuthRepository.findById(user.getId()).orElseThrow();
+        assertThat(updated.getRole()).isEqualTo(AuthRole.ADMIN);
+    }
+
+    @Test
+    void refreshTokenInvalidTypeShouldFail() throws Exception {
+        String fakeAccessToken = jwtUtil.generateToken(1L, AuthRole.USER);
+
+        mockMvc.perform(post("/auth/refresh")
+                        .param("refreshToken", fakeAccessToken))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void refreshTokenSuccess() throws Exception {
+        AuthRequest request = new AuthRequest(TEST_LOGIN, TEST_PASSWORD);
+
+        MvcResult loginResult = mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        AuthResponse loginResponse = objectMapper.readValue(
+                loginResult.getResponse().getContentAsString(),
+                AuthResponse.class
+        );
+
+        MvcResult refreshResult = mockMvc.perform(post("/auth/refresh")
+                        .param("refreshToken", loginResponse.getRefreshToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").exists())
+                .andExpect(jsonPath("$.refreshToken").exists())
+                .andReturn();
+
+        AuthResponse refreshResponse = objectMapper.readValue(
+                refreshResult.getResponse().getContentAsString(),
+                AuthResponse.class
+        );
+
+        assertThat(refreshResponse.getAccessToken()).isNotBlank();
+        assertThat(refreshResponse.getRefreshToken())
+                .isEqualTo(loginResponse.getRefreshToken());
+    }
+
+    @Test
     @DisplayName("POST /auth/register - Success registration a new user")
     void registerSuccess() throws Exception {
 

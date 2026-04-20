@@ -44,6 +44,22 @@ class JwtAuthFilterTest {
     }
 
     @Test
+    void shouldIgnoreRefreshToken() throws Exception {
+        String refreshToken = jwtUtil.generateRefreshToken(1L);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Authorization", "Bearer " + refreshToken);
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        FilterChain chain = mock(FilterChain.class);
+
+        filter.doFilter(request, response, chain);
+
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        verify(chain).doFilter(request, response);
+    }
+
+    @Test
     void shouldSetAuthenticationIfTokenValid() throws Exception {
 
         String token = jwtUtil.generateToken(1L, AuthRole.USER);
